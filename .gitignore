@@ -1,0 +1,8 @@
+minikube-linux-amd64
+get_helm.sh
+.minikube/
+.cache/
+node_modules/
+*.log
+*.tar.gz
+.env
