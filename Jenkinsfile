@@ -67,44 +67,31 @@ pipeline {
         
         // STAGE 3: Kubernetes Deployment [17 Marks]
         stage('☸️ Kubernetes Deployment Stage') {
-            steps {
-                echo 'Starting Kubernetes Deployment...'
+    steps {
+        echo 'Starting Kubernetes Deployment...'
+        script {
+            sh '''
+                # Export KUBECONFIG with correct path
+                export KUBECONFIG=/var/lib/jenkins/.kube/config
                 
-                script {
-                    // Create namespace if not exists
-                    sh '''
-                        kubectl create namespace ${KUBE_NAMESPACE} || true
-                    '''
-                    
-                    // Update deployment.yaml with latest image
-                    sh """
-                        sed -i 's|image: .*|image: ${DOCKER_IMAGE}:latest|g' deployment.yaml
-                    """
-                    
-                    // Apply Kubernetes manifests
-                    sh '''
-                        kubectl apply -f deployment.yaml -n ${KUBE_NAMESPACE}
-                        kubectl apply -f service.yaml -n ${KUBE_NAMESPACE}
-                        kubectl apply -f pvc.yaml -n ${KUBE_NAMESPACE}
-                    '''
-                    
-                    // Wait for deployment to be ready
-                    sh '''
-                        kubectl rollout status deployment/webapp-deployment -n ${KUBE_NAMESPACE} --timeout=300s
-                    '''
-                    
-                    // Get service info
-                    sh '''
-                        echo "=== Kubernetes Services ==="
-                        kubectl get svc -n ${KUBE_NAMESPACE}
-                        echo "=== Kubernetes Pods ==="
-                        kubectl get pods -n ${KUBE_NAMESPACE}
-                    '''
-                    
-                    echo '✅ Application deployed to Kubernetes!'
-                }
-            }
+                # Create namespace
+                kubectl create namespace devops-namespace --dry-run=client -o yaml | kubectl apply -f -
+                
+                # Apply manifests
+                kubectl apply -f deployment.yaml -n devops-namespace
+                kubectl apply -f service.yaml -n devops-namespace
+                kubectl apply -f pvc.yaml -n devops-namespace
+                
+                # Wait for deployment
+                kubectl rollout status deployment/webapp-deployment -n devops-namespace
+                
+                # Show resources
+                echo "=== Deployment Status ==="
+                kubectl get all -n devops-namespace
+            '''
         }
+    }
+}
         
         // STAGE 4: Monitoring Setup [17 Marks]
         stage('📊 Prometheus/Grafana Stage') {
