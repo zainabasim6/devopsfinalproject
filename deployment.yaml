@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: webapp
-        image: your-dockerhub-username/devops-lab-app:latest  # Will be replaced by Jenkins
+        image: zainabasim/devops-lab-app:latest  # Will be replaced by Jenkins
         imagePullPolicy: Always  # Always pull latest image
         ports:
         - containerPort: 3000
