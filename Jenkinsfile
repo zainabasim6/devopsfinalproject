@@ -4,7 +4,7 @@ pipeline {
     // Environment variables for reuse
     environment {
         DOCKERHUB_CREDENTIALS = credentials('docker-hub-creds')
-        DOCKER_IMAGE = 'your-dockerhub-username/devops-lab-app'
+        DOCKER_IMAGE = 'zainabasim/devops-lab-app'
         KUBE_NAMESPACE = 'devops-namespace'
     }
     
@@ -19,7 +19,7 @@ pipeline {
                 
                 // Fetch code from GitHub
                 git branch: 'main', 
-                    url: 'https://github.com/YOUR-USERNAME/YOUR-REPO.git',
+                    url: 'https://github.com/zainabasim6/devopsfinalproject.git',
                     credentialsId: 'github-credentials'
                 
                 // List files to verify
