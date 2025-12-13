@@ -28,6 +28,32 @@ pipeline {
                 }
             }
         }
+
+        stage('📊 Setup Monitoring Stack') {
+    steps {
+        sh '''
+            # Create monitoring namespace
+            kubectl create namespace monitoring 2>/dev/null || true
+            
+            echo "📦 Deploying Prometheus..."
+            kubectl apply -f monitoring/prometheus.yaml -n monitoring
+            
+            echo "📊 Deploying Grafana..."
+            kubectl apply -f monitoring/grafana.yaml -n monitoring
+            
+            # Wait for services to be ready
+            sleep 20
+            
+            echo "✅ Monitoring stack deployed!"
+            echo ""
+            echo "📈 To access monitoring tools:"
+            echo "1. Get minikube IP: minikube ip"
+            echo "2. Get NodePorts: kubectl get svc -n monitoring"
+        '''
+    }
+}
+
+
         
         stage('☸️ Deploy to Minikube') {
             steps {
